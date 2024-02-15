@@ -26,7 +26,8 @@ const unordered_map<DataType,string,EnumClassHash>  DATATYPE_PREFIX { {DataType:
                                                                       {DataType::binary, "BIN"},
                                                                       {DataType::genotype10, "GT"},
                                                                       {DataType::multistate, "MULTI"},
-                                                                      {DataType::autodetect, "AUTO"}
+                                                                      {DataType::autodetect, "AUTO"},
+                                                                      {DataType::cognate, "COG"}
                                                                     };
 
 
@@ -198,6 +199,14 @@ void Model::init_from_string(const std::string &model_string)
     libpll_check_error("ERROR in model specification |" + model_name + "|");
     assert(_custom_charmap);
   }
+  else if (_data_type == DataType::cognate)
+  {
+    _num_states = pllmod_util_model_numstates_cog(model_name.c_str());
+    _custom_charmap = shared_ptr<pll_state_t>(pllmod_util_model_charmap_mult(_num_states), free);
+
+    libpll_check_error("ERROR in model specification |" + model_name + "|");
+    assert(_custom_charmap);
+  }
   else
     _num_states = DATATYPE_STATES.at(_data_type);
 
@@ -224,6 +233,8 @@ std::string Model::data_type_name() const
       return "MULTI" + std::to_string(_num_states);
     case DataType::autodetect:
       return "AUTO";
+    case DataType::cognate:
+      return "COG" + std::to_string(_num_states); //TODO
     default:
       return "UNKNOWN";
   }
@@ -240,6 +251,10 @@ void Model::autodetect_data_type(const std::string &model_name)
     else if (pllmod_util_model_exists_mult(model_name.c_str()))
     {
       _data_type = DataType::multistate;
+    }
+    else if (pllmod_util_model_exists_cog(model_name.c_str()))
+    {
+      _data_type = DataType::cognate;
     }
     else if (model_name == "BIN")
     {
@@ -265,6 +280,8 @@ void Model::autodetect_data_type(const std::string &model_name)
         _data_type = DataType::genotype10;
       else if (isprefix(model_name, "MULTI"))
         _data_type = DataType::multistate;
+      else if (isprefix(model_name, "COG"))
+        _data_type = DataType::cognate;
       else
         _data_type = DataType::dna;   /* assume DNA by default & hope for the best */
     }
@@ -301,6 +318,10 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
     else if (_data_type == DataType::genotype10)
     {
       modinfo =  pllmod_util_model_info_genotype(model_cstr);
+    }
+    else if (_data_type == DataType::cognate)
+    {
+      modinfo =  cognate_modinfo(model_cstr);
     }
     else if (_data_type == DataType::multistate)
     {
@@ -1228,3 +1249,28 @@ LogStream& operator<<(LogStream& stream, const Model& m)
   return stream;
 }
 
+pllmod_subst_model_t * cognate_modinfo(const char * model_cstr)
+{
+  int num_states = pllmod_util_model_numstates_cog(model_cstr);
+  assert((num_states & (num_states - 1)) == 0);
+  std::string rate_sym = "";
+  std::string freq_sym = "";
+  for (int i = 0; i < num_states; i++)
+  {
+    rate_sym += std::to_string(__builtin_popcount(i));
+    for (int j = i+1; j < num_states; j++)
+    {
+      int x_or = __builtin_popcount(i ^ j);
+      if (x_or == 1)
+      {
+        freq_sym += std::to_string(std::max(__builtin_popcount(i), __builtin_popcount(j)));
+      }
+      else
+      {
+        freq_sym += "0";
+      }
+    }
+  }
+  return pllmod_util_model_create_custom("COG", num_states, NULL, NULL, rate_sym.c_str(), freq_sym.c_str());
+
+}

@@ -204,6 +204,8 @@ private:
   void init_state_names() const;
   void set_user_srates(doubleVector& srates, bool normalize = true);
   void set_user_freqs(doubleVector& freqs);
+
+  pllmod_subst_model_t * cognate_modinfo(const char * model_cstr);
 };
 
 typedef std::unordered_map<size_t, Model> ModelMap;
