@@ -321,7 +321,27 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
     }
     else if (_data_type == DataType::cognate)
     {
-      modinfo =  cognate_modinfo(model_cstr);
+      int num_states = pllmod_util_model_numstates_cog(model_cstr);
+      assert((num_states & (num_states - 1)) == 0);
+      std::string rate_sym = "";
+      std::string freq_sym = "";
+      for (int i = 0; i < num_states; i++)
+      {
+        freq_sym += std::to_string(__builtin_popcount(i));
+        for (int j = i+1; j < num_states; j++)
+        {
+          int x_or = __builtin_popcount(i ^ j);
+          if (x_or == 1)
+          {
+            rate_sym += std::to_string(std::max(__builtin_popcount(i), __builtin_popcount(j)));
+          }
+          else
+          {
+            rate_sym += "0";
+          }
+        }
+      }
+      modinfo = pllmod_util_model_create_custom("COG", num_states, NULL, NULL, rate_sym.c_str(), freq_sym.c_str());
     }
     else if (_data_type == DataType::multistate)
     {
@@ -1247,30 +1267,4 @@ LogStream& operator<<(LogStream& stream, const Model& m)
   stream << endl;
 
   return stream;
-}
-
-pllmod_subst_model_t * cognate_modinfo(const char * model_cstr)
-{
-  int num_states = pllmod_util_model_numstates_cog(model_cstr);
-  assert((num_states & (num_states - 1)) == 0);
-  std::string rate_sym = "";
-  std::string freq_sym = "";
-  for (int i = 0; i < num_states; i++)
-  {
-    rate_sym += std::to_string(__builtin_popcount(i));
-    for (int j = i+1; j < num_states; j++)
-    {
-      int x_or = __builtin_popcount(i ^ j);
-      if (x_or == 1)
-      {
-        freq_sym += std::to_string(std::max(__builtin_popcount(i), __builtin_popcount(j)));
-      }
-      else
-      {
-        freq_sym += "0";
-      }
-    }
-  }
-  return pllmod_util_model_create_custom("COG", num_states, NULL, NULL, rate_sym.c_str(), freq_sym.c_str());
-
 }
