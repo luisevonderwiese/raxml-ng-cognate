@@ -313,7 +313,7 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
     }
     else if (_data_type == DataType::binary)
     {
-      modinfo =  pllmod_util_model_create_custom("BIN", 2, NULL, NULL, NULL, NULL);
+      modinfo =  pllmod_util_model_create_custom("BIN", 2, NULL, NULL, NULL, NULL, 0);
     }
     else if (_data_type == DataType::genotype10)
     {
@@ -341,7 +341,7 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
           }
         }
       }
-      modinfo = pllmod_util_model_create_custom("COG", num_states, NULL, NULL, rate_sym.c_str(), freq_sym.c_str());
+      modinfo = pllmod_util_model_create_custom("COG", num_states, NULL, NULL, rate_sym.c_str(), freq_sym.c_str(), 1);
     }
     else if (_data_type == DataType::multistate)
     {
@@ -355,7 +355,7 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
 
       const char * custom_sym_cstr = model_cstr + prefix.size();
       modinfo =  pllmod_util_model_create_custom(model_cstr, _num_states, NULL, NULL,
-                                                 custom_sym_cstr, NULL);
+                                                 custom_sym_cstr, NULL, 0);
     }
 
     if (!modinfo)

@@ -21,6 +21,7 @@ public:
       _rate_sym.assign(sm.rate_sym, sm.rate_sym + sm.states*(sm.states-1)/2);
     if (sm.freq_sym)
       _freq_sym.assign(sm.freq_sym, sm.freq_sym + sm.states);
+    _force_zero = sm.force_zero;
   };
 
   // getters
@@ -29,6 +30,7 @@ public:
   const doubleVector& base_freqs() const { return _base_freqs; }
   const doubleVector& subst_rates() const { return _subst_rates; }
   const intVector& rate_sym() const { return _rate_sym; }
+  bool force_zero() const { return _force_zero; }
   const intVector& freq_sym() const { return _freq_sym; }
 
   unsigned int num_rates() const  { return _states*(_states-1)/2; }
@@ -93,6 +95,7 @@ private:
   doubleVector _base_freqs;
   doubleVector _subst_rates;
   intVector _rate_sym;
+  bool _force_zero;
   intVector _freq_sym;
 };
 

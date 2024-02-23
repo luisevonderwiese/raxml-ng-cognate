@@ -70,7 +70,8 @@ void TreeInfo::init(const Options &opts, const Tree& tree, const PartitionedMSA&
                                                   pinfo.model().gamma_mode(),
                                                   pinfo.model().alpha(),
                                                   pinfo.model().ratecat_submodels().data(),
-                                                  pinfo.model().submodel(0).rate_sym().data());
+                                                  pinfo.model().submodel(0).rate_sym().data(),
+                                                  pinfo.model().submodel(0).force_zero());
 
       if (!retval)
       {
