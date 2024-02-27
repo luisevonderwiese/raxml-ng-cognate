@@ -864,7 +864,19 @@ void Model::init_model_opts(const std::string &model_opts, const pllmod_mixture_
     case ParamValue::ML:
       /* use equal rates as s a starting value for ML optimization */
       for (auto& m: _submodels)
-        m.subst_rates(doubleVector(m.num_rates(), 1.0));
+      {
+        if (_data_type == DataType::cognate)
+        {
+          doubleVector v = doubleVector(m.num_rates(), 1.0);
+          v[0] = PLLMOD_OPT_MIN_SUBST_RATE;
+          m.subst_rates(v);
+        }
+        else
+        {
+          m.subst_rates(doubleVector(m.num_rates(), 1.0));
+        }
+      }
+
       break;
     default:
       assert(0);
