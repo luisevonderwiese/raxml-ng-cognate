@@ -333,7 +333,8 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
           int x_or = __builtin_popcount(i ^ j);
           if (x_or == 1)
           {
-            rate_sym += std::to_string(std::max(__builtin_popcount(i), __builtin_popcount(j)));
+            //rate_sym += std::to_string(std::max(__builtin_popcount(i), __builtin_popcount(j)));
+            rate_sym += "1";
           }
           else
           {
