@@ -868,7 +868,21 @@ void Model::init_model_opts(const std::string &model_opts, const pllmod_mixture_
         if (_data_type == DataType::cognate)
         {
           doubleVector v = doubleVector(m.num_rates(), 1.0);
-          v[0] = PLLMOD_OPT_MIN_SUBST_RATE;
+          int k = 0;
+          for (unsigned int i = 0; i < m.num_uniq_rates(); i++)
+          {
+            for (unsigned int j = i+1; j < m.num_uniq_rates(); j++)
+            {
+              int x_or = __builtin_popcount(i ^ j);
+              if (x_or != 1)
+              {
+                v[k] = PLLMOD_OPT_MIN_SUBST_RATE;
+              }
+              k++;
+            }
+          }
+
+
           m.subst_rates(v);
         }
         else
