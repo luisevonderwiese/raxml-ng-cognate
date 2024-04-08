@@ -333,7 +333,7 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
           int x_or = __builtin_popcount(i ^ j);
           if (x_or == 1)
           {
-            rate_sym += std::to_string(std::max(__builtin_popcount(i), __builtin_popcount(j)));
+            rate_sym += "1";
           }
           else
           {
@@ -341,7 +341,7 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
           }
         }
       }
-      modinfo = pllmod_util_model_create_custom("COG", num_states, NULL, NULL, rate_sym.c_str(), freq_sym.c_str(), 1);
+      modinfo = pllmod_util_model_create_custom("COG", num_states, NULL, NULL, rate_sym.c_str(), freq_sym.c_str(), 0);
     }
     else if (_data_type == DataType::multistate)
     {
@@ -865,16 +865,7 @@ void Model::init_model_opts(const std::string &model_opts, const pllmod_mixture_
       /* use equal rates as s a starting value for ML optimization */
       for (auto& m: _submodels)
       {
-        if (_data_type == DataType::cognate)
-        {
-          doubleVector v = doubleVector(m.num_rates(), 1.0);
-          v[0] = PLLMOD_OPT_MIN_SUBST_RATE;
-          m.subst_rates(v);
-        }
-        else
-        {
-          m.subst_rates(doubleVector(m.num_rates(), 1.0));
-        }
+        m.subst_rates(doubleVector(m.num_rates(), 1.0));
       }
 
       break;
