@@ -865,34 +865,7 @@ void Model::init_model_opts(const std::string &model_opts, const pllmod_mixture_
       /* use equal rates as s a starting value for ML optimization */
       for (auto& m: _submodels)
       {
-<<<<<<< HEAD
         m.subst_rates(doubleVector(m.num_rates(), 1.0));
-=======
-        if (_data_type == DataType::cognate)
-        {
-          doubleVector v = doubleVector(m.num_rates(), 1.0);
-          int k = 0;
-          for (unsigned int i = 1; i < m.num_uniq_rates(); i++)
-          {
-            for (unsigned int j = i+1; j < m.num_uniq_rates(); j++)
-            {
-              int x_or = __builtin_popcount(i ^ j);
-              if (x_or != 1)
-              {
-                v[k] = PLLMOD_OPT_MIN_SUBST_RATE;
-              }
-              k++;
-            }
-          }
-
-
-          m.subst_rates(v);
-        }
-        else
-        {
-          m.subst_rates(doubleVector(m.num_rates(), 1.0));
-        }
->>>>>>> 6c2f167 (Change cognate model by removing 0000 state)
       }
 
       break;
