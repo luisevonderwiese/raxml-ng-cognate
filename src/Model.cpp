@@ -201,7 +201,7 @@ void Model::init_from_string(const std::string &model_string)
   }
   else if (_data_type == DataType::cognate)
   {
-    _num_states = pllmod_util_model_numstates_cog(model_name.c_str());
+    _num_states = pllmod_util_model_numstates_cog(model_name.c_str()) - 1;
     _custom_charmap = shared_ptr<pll_state_t>(pllmod_util_model_charmap_mult(_num_states), free);
 
     libpll_check_error("ERROR in model specification |" + model_name + "|");
@@ -325,15 +325,15 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
       assert((num_states & (num_states - 1)) == 0);
       std::string rate_sym = "";
       std::string freq_sym = "";
-      for (int i = 0; i < num_states; i++)
+      for (int i = 1; i < num_states; i++)
       {
-        freq_sym += std::to_string(__builtin_popcount(i));
+        freq_sym += std::to_string(__builtin_popcount(i) - 1);
         for (int j = i+1; j < num_states; j++)
         {
           int x_or = __builtin_popcount(i ^ j);
           if (x_or == 1)
           {
-            rate_sym += std::to_string(std::max(__builtin_popcount(i), __builtin_popcount(j)));
+            rate_sym += std::to_string(std::min(__builtin_popcount(i), __builtin_popcount(j)));
           }
           else
           {
@@ -341,7 +341,7 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
           }
         }
       }
-      modinfo = pllmod_util_model_create_custom("COG", num_states, NULL, NULL, rate_sym.c_str(), freq_sym.c_str(), 1);
+      modinfo = pllmod_util_model_create_custom("COG", num_states - 1, NULL, NULL, rate_sym.c_str(), freq_sym.c_str(), 1);
     }
     else if (_data_type == DataType::multistate)
     {
@@ -869,7 +869,7 @@ void Model::init_model_opts(const std::string &model_opts, const pllmod_mixture_
         {
           doubleVector v = doubleVector(m.num_rates(), 1.0);
           int k = 0;
-          for (unsigned int i = 0; i < m.num_uniq_rates(); i++)
+          for (unsigned int i = 1; i < m.num_uniq_rates(); i++)
           {
             for (unsigned int j = i+1; j < m.num_uniq_rates(); j++)
             {
