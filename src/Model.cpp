@@ -201,7 +201,7 @@ void Model::init_from_string(const std::string &model_string)
   }
   else if (_data_type == DataType::cognate)
   {
-    _num_states = pllmod_util_model_numstates_cog(model_name.c_str());
+    _num_states = pllmod_util_model_numstates_cog(model_name.c_str()) - 1;
     _custom_charmap = shared_ptr<pll_state_t>(pllmod_util_model_charmap_mult(_num_states), free);
 
     libpll_check_error("ERROR in model specification |" + model_name + "|");
@@ -325,9 +325,9 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
       assert((num_states & (num_states - 1)) == 0);
       std::string rate_sym = "";
       std::string freq_sym = "";
-      for (int i = 0; i < num_states; i++)
+      for (int i = 1; i < num_states; i++)
       {
-        freq_sym += std::to_string(__builtin_popcount(i));
+        freq_sym += std::to_string(__builtin_popcount(i) - 1);
         for (int j = i+1; j < num_states; j++)
         {
           int x_or = __builtin_popcount(i ^ j);
@@ -341,7 +341,7 @@ pllmod_mixture_model_t * Model::init_mix_model(const std::string &model_name)
           }
         }
       }
-      modinfo = pllmod_util_model_create_custom("COG", num_states, NULL, NULL, rate_sym.c_str(), freq_sym.c_str(), 0);
+      modinfo = pllmod_util_model_create_custom("COG", num_states - 1, NULL, NULL, rate_sym.c_str(), freq_sym.c_str(), 0);
     }
     else if (_data_type == DataType::multistate)
     {
@@ -865,7 +865,34 @@ void Model::init_model_opts(const std::string &model_opts, const pllmod_mixture_
       /* use equal rates as s a starting value for ML optimization */
       for (auto& m: _submodels)
       {
+<<<<<<< HEAD
         m.subst_rates(doubleVector(m.num_rates(), 1.0));
+=======
+        if (_data_type == DataType::cognate)
+        {
+          doubleVector v = doubleVector(m.num_rates(), 1.0);
+          int k = 0;
+          for (unsigned int i = 1; i < m.num_uniq_rates(); i++)
+          {
+            for (unsigned int j = i+1; j < m.num_uniq_rates(); j++)
+            {
+              int x_or = __builtin_popcount(i ^ j);
+              if (x_or != 1)
+              {
+                v[k] = PLLMOD_OPT_MIN_SUBST_RATE;
+              }
+              k++;
+            }
+          }
+
+
+          m.subst_rates(v);
+        }
+        else
+        {
+          m.subst_rates(doubleVector(m.num_rates(), 1.0));
+        }
+>>>>>>> 6c2f167 (Change cognate model by removing 0000 state)
       }
 
       break;
