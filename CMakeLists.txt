@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.0.2 FATAL_ERROR)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 
-set(RAXML_BINARY_NAME "" CACHE STRING "Custom RAxML-NG binary name")
+set(RAXML_BINARY_NAME "raxml-ng-COG" CACHE STRING "Custom RAxML-NG binary name")
 set(USE_LIBPLL_CMAKE ON CACHE BOOL "Use CMake to build libpll and pll-modules")
 set(BUILD_AS_LIBRARY OFF CACHE BOOL "Build RAxML-NG as shared library (instead of stand-alone executable)")
 set(PLLMOD_DEBUG OFF CACHE BOOL "Debug pll-modules (tons of console output!)")
@@ -12,7 +12,7 @@ set (USE_PTHREADS ON CACHE BOOL "Enable multi-threading support (PTHREADS)")
 set (USE_MPI OFF CACHE BOOL "Enable MPI support")
 set (USE_VCF OFF)
 
-# set both following options to OFF to build a portable binary 
+# set both following options to OFF to build a portable binary
 # (don't worry, libpll will still have full SIMD support!)
 set (ENABLE_RAXML_SIMD OFF CACHE BOOL "Enable SIMD instructions in RAxML (non-portable but slightly faster)")
 set (ENABLE_PLLMOD_SIMD OFF CACHE BOOL "Enable SIMD instructions in pll-modules (non-portable but slightly faster)")
