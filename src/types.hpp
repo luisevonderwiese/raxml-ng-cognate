@@ -80,6 +80,7 @@ enum class AscBiasCorrection
   lewis = PLL_ATTRIB_AB_LEWIS,
   felsenstein = PLL_ATTRIB_AB_FELSENSTEIN,
   stamatakis = PLL_ATTRIB_AB_STAMATAKIS,
+  cognate = PLL_ATTRIB_AB_COGNATE,
 };
 
 enum class BootstopCriterion

@@ -666,7 +666,7 @@ void check_models(const RaxmlInstance& instance)
     // check partitions which contain invariant sites and have ascertainment bias enabled
     if (opts.safety_checks.isset(SafetyCheck::model_asc_bias))
     {
-      if (model.ascbias_type() != AscBiasCorrection::none && stats.inv_count() > 0)
+      if (model.ascbias_type() != AscBiasCorrection::none && model.ascbias_type() != AscBiasCorrection::cognate && stats.inv_count() > 0)
       {
         throw runtime_error("You enabled ascertainment bias correction for partition " +
                              pinfo.name() + ", but it contains " +

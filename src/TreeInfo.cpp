@@ -643,7 +643,7 @@ pll_partition_t* create_pll_partition(const Options& opts, const PartitionInfo& 
   }
 
   // NOTE: if partition is split among multiple threads, asc. bias correction must be applied only once!
-  if (model.ascbias_type() == AscBiasCorrection::lewis ||
+  if (model.ascbias_type() == AscBiasCorrection::lewis || model.ascbias_type() == AscBiasCorrection::cognate ||
       (model.ascbias_type() != AscBiasCorrection::none && part_region.master()))
   {
     attrs |=  PLL_ATTRIB_AB_FLAG;

@@ -564,6 +564,10 @@ void Model::init_model_opts(const std::string &model_opts, const pllmod_mixture_
             else
               throw parse_error();
           }
+	  else if (asc_str == "ASC_COGNATE")
+          {
+            _ascbias_type = AscBiasCorrection::cognate;
+          }
           else
             throw parse_error();
         }
@@ -1045,6 +1049,9 @@ std::string Model::to_string(bool print_params, unsigned int precision) const
     case AscBiasCorrection::stamatakis:
       model_string << "+ASC_STAM";
       print_param(model_string, _ascbias_weights);
+      break;
+    case AscBiasCorrection::cognate:
+      model_string << "+ASC_COGNATE";
       break;
     default:
       break;
